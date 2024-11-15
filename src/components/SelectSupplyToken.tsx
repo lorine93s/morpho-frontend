@@ -8,8 +8,6 @@ import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Loading } from './Loading';
 
-// TODO: if no wallet connection, what are we setting here as default and in whole app?, also with loading and so on
-// TODO: do wallet connection
 const GET_ASSETS = gql`
   query GetAssets($chainId: [Int!]) {
     vaults(where: { chainId_in: $chainId }) {
@@ -77,7 +75,7 @@ export default function SelectSupplyToken() {
   const [assets, setAssets] = useState<Asset[]>([]);
 
   const { data, loading } = useQuery(GET_ASSETS, {
-    variables: { chainId: chain?.id ? [chain.id] : [1] },
+    variables: { chainId: [chain?.id as number] },
     skip: !chain?.id
   });
 
