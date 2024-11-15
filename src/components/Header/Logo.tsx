@@ -7,8 +7,7 @@ import Link from 'next/link';
 export default function Logo() {
   return (
     <Link href="/">
-      {/* TODO: change logo alt */}
-      <Image src={logo} alt="logo" width={48} height={48} />
+      <Image src={logo} alt="Morpho Frontend" width={48} height={48} />
     </Link>
   );
 }
