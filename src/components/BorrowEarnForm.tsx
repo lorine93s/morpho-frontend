@@ -1,6 +1,8 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { useAccount } from 'wagmi';
+import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
 export default function BorrowEarnForm({
@@ -10,6 +12,8 @@ export default function BorrowEarnForm({
   isEarn: boolean;
   setIsEarn: (isEarn: boolean) => void;
 }) {
+  const { isConnected } = useAccount();
+
   return (
     <div
       className={cn(
@@ -38,14 +42,17 @@ export default function BorrowEarnForm({
             Borrow
           </span>
         </div>
-        <SelectSupplyToken />
+        {isConnected && (
+          <>
+            <SelectSupplyToken />
+          </>
+        )}
       </div>
       <div className="flex flex-col gap-4 justify-between items-center">
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        {/* TODO: toast here */}
-        <button className="text-2xl w-full rounded-[16px] bg-[#2c2d2d] py-2">Finalize transaction</button>
+        <FinalizeTransaction />
       </div>
     </div>
   );
