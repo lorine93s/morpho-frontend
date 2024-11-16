@@ -49,8 +49,15 @@ export default function Vault({
           <span>100,000</span>
         </div>
         <div className="flex justify-between items-center w-full">
-          <span>Curator</span>
-          <span>100,000</span>
+          <span>{vault.curators.length > 1 ? 'Curators' : 'Curator'}</span>
+          <div className="flex items-center gap-2">
+            {vault.curators.map((curator) => (
+              <a className="flex items-center" key={curator.name} href={curator.link} target="_blank">
+                <Image src={curator.image} alt={curator.name} width={28} height={28} />
+                <span>{curator.name}</span>
+              </a>
+            ))}
+          </div>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Collateral</span>

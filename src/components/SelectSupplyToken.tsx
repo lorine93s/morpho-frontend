@@ -45,13 +45,15 @@ const GET_ASSETS = gql`
         metadata {
           curators {
             name
+            image
+            url
           }
         }
       }
     }
   }
 `;
-// TODO: info links to morpho page for that vault and remove more information button
+
 export default function SelectSupplyToken() {
   const [amount, setAmount] = useState('');
   const { chain } = useAccount();
@@ -165,7 +167,7 @@ export default function SelectSupplyToken() {
       <div className="relative">
         <Input value={amount} onChange={handleAmountChange} placeholder="0.0" className="text-base" />
         <Select onValueChange={handleTokenChange}>
-          <SelectTrigger className="w-2/5 absolute top-0" disabled={loading}>
+          <SelectTrigger className="w-2/5 absolute top-0" disabled={loading || assets.length === 0}>
             {loading ? <Loading /> : <SelectValue placeholder="Select token" />}
           </SelectTrigger>
           <SelectContent>
