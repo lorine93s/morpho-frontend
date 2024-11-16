@@ -56,7 +56,7 @@ export default function Position({
             ))}
           </div>
         </div>
-        <button className={cn("text-xl w-full rounded-[16px] py-2", !selected && 'bg-[#456DB5]')} onClick={() => setSelectedVault(vaultPosition)}>{selected ? 'Selected' : 'Select Position'}</button>
+        <button className={cn("text-xl w-full rounded-[16px] py-2", !selected ? 'bg-[#456DB5]' : 'bg-[#2f3434]')} onClick={() => setSelectedVault(vaultPosition)}>{selected ? 'Selected' : 'Select Position'}</button>
       </div>
     </PositionCard>
   );
