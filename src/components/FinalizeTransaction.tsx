@@ -5,10 +5,12 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 export default function FinalizeTransaction({
   disabled = false,
-  title = 'Finalize transaction'
+  title = 'Finalize transaction',
+  finalizeTransaction
 }: {
   disabled?: boolean;
   title?: string;
+  finalizeTransaction: () => void;
 }) {
   return (
     <ConnectButton.Custom>
@@ -26,6 +28,7 @@ export default function FinalizeTransaction({
           <button
             className={cn('text-2xl w-full rounded-[16px] py-2', disabled ? 'bg-[#2c2d2d]' : 'bg-[#456DB5]')}
             disabled={disabled}
+            onClick={finalizeTransaction}
           >
             {title}
           </button>

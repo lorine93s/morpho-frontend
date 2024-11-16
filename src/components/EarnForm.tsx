@@ -8,9 +8,16 @@ import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
 export default function EarnForm() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+  // TODO: how are we setting amount as bigint?
   const [amount, setAmount] = useState('');
   const { selectedVault } = useAppContext();
+
+  console.log('selectedVault', selectedVault);
+
+  const finalizeTransaction = async () => {
+    console.log('finalizeTransaction');
+  };
 
   return (
     <div
@@ -31,7 +38,7 @@ export default function EarnForm() {
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        <FinalizeTransaction disabled={!(amount !== '' && selectedVault)} />
+        <FinalizeTransaction disabled={!(amount !== '' && selectedVault)} finalizeTransaction={finalizeTransaction} />
       </div>
     </div>
   );
