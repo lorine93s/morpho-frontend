@@ -56,7 +56,7 @@ export default function Vault({
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Net APY</span>
-          <span>100,000</span>
+          <span>{(vault.state.netApy * 100).toFixed(2)}%</span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>{vault.curators.length > 1 ? 'Curators' : 'Curator'}</span>

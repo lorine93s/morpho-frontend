@@ -17,11 +17,17 @@ export default function AvailableVaults() {
     >
       {selectedAsset ? (
         <>
-          {selectedAsset.highAPY1 && <Vault vaultType="apy" asset={selectedAsset} vault={selectedAsset.highAPY1} />}
-          {selectedAsset.highAPY2 && <Vault vaultType="apy" asset={selectedAsset} vault={selectedAsset.highAPY2} />}
-          {selectedAsset.highTVL && <Vault vaultType="tvl" asset={selectedAsset} vault={selectedAsset.highTVL} />}
-          {selectedAsset.trustedCurator && (
-            <Vault vaultType="curator" asset={selectedAsset} vault={selectedAsset.trustedCurator} />
+          {selectedAsset.highAPY1Vault && (
+            <Vault vaultType="apy" asset={selectedAsset} vault={selectedAsset.highAPY1Vault} />
+          )}
+          {selectedAsset.highAPY2Vault && (
+            <Vault vaultType="apy" asset={selectedAsset} vault={selectedAsset.highAPY2Vault} />
+          )}
+          {selectedAsset.highTVLVault && (
+            <Vault vaultType="tvl" asset={selectedAsset} vault={selectedAsset.highTVLVault} />
+          )}
+          {selectedAsset.trustedCuratorVault && (
+            <Vault vaultType="curator" asset={selectedAsset} vault={selectedAsset.trustedCuratorVault} />
           )}
         </>
       ) : (

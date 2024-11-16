@@ -5,13 +5,14 @@ export interface Asset {
   symbol: string;
   decimals: number;
   vaults: VaultItem[];
-  trustedCurator?: VaultItem;
-  highTVL?: VaultItem;
-  highAPY1?: VaultItem;
-  highAPY2?: VaultItem;
+  trustedCuratorVault?: VaultItem;
+  highTVLVault?: VaultItem;
+  highAPY1Vault?: VaultItem;
+  highAPY2Vault?: VaultItem;
 }
 
 export interface VaultItem {
+  id: string;
   address: string;
   symbol: string;
   name: string;
