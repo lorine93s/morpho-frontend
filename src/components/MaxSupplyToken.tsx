@@ -1,6 +1,6 @@
 'use client';
 
-import { useWETH } from '@/hooks/useWeth';
+import { useWETH } from '@/hooks/useWETH';
 import { type Asset } from '@/types';
 import { formatEther, formatUnits } from 'viem';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
@@ -33,7 +33,7 @@ export default function MaxSupplyToken({ asset, handleMax }: { asset: Asset; han
     <>
       <span className="text-[#878888]">
         Balance&nbsp;
-        {balance}
+        {balance} {asset.address === WETH && 'ETH'}
       </span>
       <button className="text-[#456DB5]" onClick={() => handleMax(balance)}>
         Max

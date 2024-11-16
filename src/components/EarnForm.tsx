@@ -8,8 +8,7 @@ import { BundlerAction } from '@morpho-org/morpho-blue-bundlers/pkg';
 import { useState } from 'react';
 import { encodeFunctionData } from 'viem';
 // TODO: useWaitForTransactionReceipt and toast
-// TODO: try removing approve from bundler
-import { useWETH } from '@/hooks/useWeth';
+import { useWETH } from '@/hooks/useWETH';
 import { parseEther, parseUnits } from 'viem';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
