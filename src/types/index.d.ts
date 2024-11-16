@@ -20,6 +20,7 @@ export interface VaultItem {
   creationTimestamp: string;
   creatorAddress: string;
   whitelisted: boolean;
+  network: string;
   state: {
     id: string;
     apy: number;
@@ -29,7 +30,7 @@ export interface VaultItem {
     fee: number;
     timelock: number;
   };
-  curator: {
+  curators: {
     name: string;
-  };
+  }[];
 }

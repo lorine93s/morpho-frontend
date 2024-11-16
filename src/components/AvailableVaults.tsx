@@ -2,16 +2,10 @@
 
 import { useAppContext } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
+import Vault from './Vault';
+import VaultCard from './VaultCard';
 
-const Card = ({
-  children
-}: Readonly<{
-  children?: React.ReactNode;
-}>) => {
-  return <div className="h-[35vh] col-span-1 bg-[#1f2324] border border-[#456DB5] rounded-xl">{children}</div>;
-};
-
-export default function AvailablePositions() {
+export default function AvailableVaults() {
   const { selectedAsset } = useAppContext();
 
   return (
@@ -23,10 +17,12 @@ export default function AvailablePositions() {
     >
       {selectedAsset ? (
         <>
-          {selectedAsset.highAPY1 && <Card />}
-          {selectedAsset.highAPY2 && <Card />}
-          {selectedAsset.highTVL && <Card />}
-          {selectedAsset.trustedCurator && <Card />}
+          {selectedAsset.highAPY1 && <Vault vaultType="apy" asset={selectedAsset} vault={selectedAsset.highAPY1} />}
+          {selectedAsset.highAPY2 && <Vault vaultType="apy" asset={selectedAsset} vault={selectedAsset.highAPY2} />}
+          {selectedAsset.highTVL && <Vault vaultType="tvl" asset={selectedAsset} vault={selectedAsset.highTVL} />}
+          {selectedAsset.trustedCurator && (
+            <Vault vaultType="curator" asset={selectedAsset} vault={selectedAsset.trustedCurator} />
+          )}
         </>
       ) : (
         <>
@@ -34,7 +30,7 @@ export default function AvailablePositions() {
             Please Select at least one token to see positions
           </span>
           {[0, 1, 2, 3].map((item) => (
-            <Card key={item} />
+            <VaultCard key={item} />
           ))}
         </>
       )}

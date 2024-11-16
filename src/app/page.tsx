@@ -1,4 +1,4 @@
-import AvailablePositions from '@/components/AvailablePositions';
+import AvailableVaults from '@/components/AvailableVaults';
 import EarnForm from '@/components/EarnForm';
 import { Separator } from '@/components/ui/separator';
 
@@ -11,7 +11,7 @@ export default function Page() {
       <div className="col-span-2 flex justify-between">
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
-          <AvailablePositions />
+          <AvailableVaults />
         </div>
       </div>
     </div>

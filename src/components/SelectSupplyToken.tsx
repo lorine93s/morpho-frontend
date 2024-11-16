@@ -30,6 +30,9 @@ const GET_ASSETS = gql`
           symbol
           decimals
         }
+        chain {
+          network
+        }
         state {
           id
           apy
@@ -89,6 +92,7 @@ export default function SelectSupplyToken() {
               creationTimestamp: item.creationTimestamp,
               creatorAddress: item.creatorAddress,
               whitelisted: item.whitelisted,
+              network: item.chain.network,
               state: {
                 id: item.state.id,
                 apy: item.state.apy,
@@ -98,9 +102,7 @@ export default function SelectSupplyToken() {
                 fee: item.state.fee,
                 timelock: item.state.timelock
               },
-              curator: {
-                name: item.metadata.curators[0].name
-              }
+              curators: item.metadata.curators
             });
           }
 
@@ -108,16 +110,22 @@ export default function SelectSupplyToken() {
         }, [])
         .filter((asset: Asset) => asset.vaults.length > 0)
         .map((_asset: Asset) => {
-          const trustedCurator = _asset.vaults.find((vault: VaultItem) => vault.curator.name === TRUSTED_CURATOR_NAME);
+          const trustedCurator = _asset.vaults.find((vault: VaultItem) =>
+            vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+          );
+          const noTrustedCuratorVaults = _asset.vaults.filter(
+            (vault: VaultItem) => !vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+          );
 
-          const sortedByTVL = _asset.vaults
-            .filter((vault: VaultItem) => vault.curator.name !== TRUSTED_CURATOR_NAME)
+          const sortedByTVL = noTrustedCuratorVaults
+            .filter(
+              (vault: VaultItem) =>
+                !trustedCurator || !vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+            )
             .sort((a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd);
           const highTVL = sortedByTVL.shift();
 
-          const sortedByAPY = sortedByTVL
-            .filter((vault: VaultItem) => vault.curator.name !== TRUSTED_CURATOR_NAME)
-            .sort((a: VaultItem, b: VaultItem) => b.state.netApy - a.state.netApy);
+          const sortedByAPY = sortedByTVL.sort((a: VaultItem, b: VaultItem) => b.state.netApy - a.state.netApy);
           const highAPY1 = sortedByAPY.shift();
           const highAPY2 = sortedByAPY.shift();
 
