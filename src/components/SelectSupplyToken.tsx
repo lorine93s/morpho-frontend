@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAppContext } from '@/contexts/AppContext';
 import { TRUSTED_CURATOR_NAME } from '@/lib/constants';
 import type { Asset, VaultItem } from '@/types';
 import { gql, useQuery } from '@apollo/client';
@@ -48,15 +49,11 @@ const GET_ASSETS = gql`
   }
 `;
 // TODO: info links to morpho page for that vault and remove more information button
-// TODO: gauntlet and if not gauntlet, two based on tvl, do it so gauntlet can be replaced
-// TODO: first order by tvl, then by apy
-// TODO: select new position as starting position
 export default function SelectSupplyToken() {
   const [amount, setAmount] = useState('');
   const { chain } = useAccount();
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
-
+  const { selectedAsset, setSelectedAsset } = useAppContext();
   const { data, loading } = useQuery(GET_ASSETS, {
     variables: { chainId: [chain?.id as number] },
     skip: !chain?.id
