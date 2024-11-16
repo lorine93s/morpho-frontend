@@ -39,9 +39,31 @@ export interface VaultItem {
     timelock: number;
     allocation: Collateral[];
   };
+  asset?: {
+    decimals: number;
+    symbol: string;
+    logoURI: string;
+  };
+  metadata?: {
+    curators: {
+      name: string;
+      image: string;
+      link: string;
+    }[];
+    image: string;
+    description: string;
+  };
   curators: {
     name: string;
     image: string;
     url: string;
   }[];
+}
+
+export interface VaultPosition {
+  id: string;
+  shares: number;
+  assets: number;
+  assetsUsd: number;
+  vault: VaultItem;
 }
