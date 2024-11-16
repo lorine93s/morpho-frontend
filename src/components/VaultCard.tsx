@@ -1,7 +1,23 @@
+import { useAppContext } from '@/contexts/AppContext';
+import { cn } from '@/lib/utils';
+import type { Vault } from '@/types';
+
 export default function VaultCard({
-  children
+  children,
+  vault
 }: Readonly<{
   children?: React.ReactNode;
+  vault?: Vault;
 }>) {
-  return <div className="h-[35vh] col-span-1 bg-[#1f2324] border border-[#456DB5] rounded-xl">{children}</div>;
+  const { selectedVault } = useAppContext();
+  return (
+    <div
+      className={cn(
+        'h-[35vh] col-span-1 bg-[#1f2324] border border-[#456DB5] rounded-xl',
+        vault?.id === selectedVault?.id && 'border-2 border-white'
+      )}
+    >
+      {children}
+    </div>
+  );
 }

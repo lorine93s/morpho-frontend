@@ -4,11 +4,11 @@ export interface Asset {
   name: string;
   symbol: string;
   decimals: number;
-  vaults: VaultItem[];
-  trustedCuratorVault?: VaultItem;
-  highTVLVault?: VaultItem;
-  highAPY1Vault?: VaultItem;
-  highAPY2Vault?: VaultItem;
+  vaults: Vault[];
+  trustedCuratorVault?: Vault;
+  highTVLVault?: Vault;
+  highAPY1Vault?: Vault;
+  highAPY2Vault?: Vault;
 }
 
 export interface Collateral {
@@ -18,7 +18,7 @@ export interface Collateral {
   supplyAssets: number;
 }
 
-export interface VaultItem {
+export interface Vault {
   id: string;
   address: string;
   symbol: string;
@@ -65,5 +65,5 @@ export interface VaultPosition {
   shares: number;
   assets: number;
   assetsUsd: number;
-  vault: VaultItem;
+  vault: Vault;
 }

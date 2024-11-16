@@ -1,19 +1,25 @@
-import type { Asset, VaultItem, VaultPosition } from '@/types';
+import type { VaultPosition } from '@/types';
 import { Info } from 'lucide-react';
 import Image from 'next/image';
 import PositionCard from './PositionCard';
 
-export default function Position({
-  vaultPosition
-}: Readonly<{ vaultPosition: VaultPosition }>) {
+export default function Position({ vaultPosition }: Readonly<{ vaultPosition: VaultPosition }>) {
   return (
     <PositionCard>
       <div className="flex flex-col justify-between items-center h-full gap-4 p-4">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
-            <Image src={vaultPosition.vault.asset?.logoURI || ""} alt={vaultPosition.vault.name} width={28} height={28} />
+            <Image
+              src={vaultPosition.vault.asset?.logoURI || ''}
+              alt={vaultPosition.vault.name}
+              width={28}
+              height={28}
+            />
             <span>{vaultPosition.vault.name}</span>
-            <a href={`https://app.morpho.org/vault?vault=${vaultPosition.vault.address}&network=${vaultPosition.vault.network}`} target="_blank">
+            <a
+              href={`https://app.morpho.org/vault?vault=${vaultPosition.vault.address}&network=${vaultPosition.vault.network}`}
+              target="_blank"
+            >
               <Info className="w-6 h-6 text-[#878888]" />
             </a>
           </div>
@@ -24,14 +30,18 @@ export default function Position({
 
         <div className="flex justify-between items-center w-full">
           <span>Amount Supplied</span>
-          <span>{vaultPosition.assets / 10 ** vaultPosition.vault.asset?.decimals || 0} {vaultPosition.vault.asset?.symbol}</span>
+          <span>
+            {vaultPosition.assets / 10 ** vaultPosition.vault.asset?.decimals || 0} {vaultPosition.vault.asset?.symbol}
+          </span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Net APY</span>
           <span>100,000</span>
         </div>
         <div className="flex justify-between items-center w-full">
-          <span>{vaultPosition.vault.metadata && vaultPosition.vault.metadata.curators.length > 1 ? 'Curators' : 'Curator'}</span>
+          <span>
+            {vaultPosition.vault.metadata && vaultPosition.vault.metadata.curators.length > 1 ? 'Curators' : 'Curator'}
+          </span>
           <div className="flex items-center gap-2">
             {vaultPosition.vault.metadata?.curators.map((curator) => (
               <a className="flex items-center" key={curator.name} href={curator.link} target="_blank">

@@ -1,5 +1,6 @@
+import { useAppContext } from '@/contexts/AppContext';
 import { cn, formatCurrencyCompact, formatDigitalCurrency } from '@/lib/utils';
-import type { Asset, VaultItem } from '@/types';
+import type { Asset, Vault } from '@/types';
 import { Info } from 'lucide-react';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
@@ -10,12 +11,13 @@ export default function Vault({
   vaultType,
   asset,
   vault
-}: Readonly<{ vaultType: 'apy' | 'tvl' | 'curator'; asset: Asset; vault: VaultItem }>) {
+}: Readonly<{ vaultType: 'apy' | 'tvl' | 'curator'; asset: Asset; vault: Vault }>) {
+  const { setSelectedVault } = useAppContext();
   const totalCollateral = vault.state.allocation.filter(
     (collateral) => collateral.supplyAssets > 0 && collateral.market.collateralAsset?.logoURI
   );
   return (
-    <VaultCard>
+    <VaultCard vault={vault}>
       <div className="flex flex-col justify-between items-center h-full gap-4 p-4">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
@@ -94,7 +96,9 @@ export default function Vault({
             ))}
           </div>
         </div>
-        <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2">Select Position</button>
+        <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2" onClick={() => setSelectedVault(vault)}>
+          Select Position
+        </button>
       </div>
     </VaultCard>
   );

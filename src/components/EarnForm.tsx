@@ -1,12 +1,16 @@
 'use client';
 
+import { useAppContext } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
 export default function EarnForm() {
   const { isConnected } = useAccount();
+  const [amount, setAmount] = useState('');
+  const { selectedVault } = useAppContext();
 
   return (
     <div
@@ -19,7 +23,7 @@ export default function EarnForm() {
         <h1 className="text-4xl font-[500] text-[#456DB5]">Earn</h1>
         {isConnected && (
           <>
-            <SelectSupplyToken />
+            <SelectSupplyToken amount={amount} setAmount={setAmount} />
           </>
         )}
       </div>
@@ -27,7 +31,7 @@ export default function EarnForm() {
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        <FinalizeTransaction />
+        <FinalizeTransaction disabled={!(amount !== '' && selectedVault)} />
       </div>
     </div>
   );
