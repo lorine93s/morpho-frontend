@@ -9,8 +9,8 @@ import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
 const GET_POSITIONS = gql`
-query getUserPositions($address: String!) {
-  userByAddress(address: $address) {
+query getUserPositions($address: String!, $chainId: Int) {
+  userByAddress(address: $address, chainId: $chainId) {
     vaultPositions {
       id
       shares
@@ -55,8 +55,8 @@ export default function Page() {
   const { chain, address } = useAccount();
 
   const { data, loading } = useQuery(GET_POSITIONS, {
-    variables: { address, chainId: [chain?.id as number] },
-    skip: !chain?.id
+    variables: { address, chainId: chain?.id as number },
+    //skip: !chain?.id
   });
 
   const [isLoading, setIsLoading] = useState(true);
