@@ -59,7 +59,7 @@ export default function EarnForm() {
   return (
     <div
       className={cn(
-        'flex flex-col justify-between items-center bg-[#1f2324] p-4 gap-4 h-full',
+        'flex flex-col justify-between items-center bg-[#1f2324] p-4 gap-4 h-full min-h-[60vh]',
         'border rounded-xl border-[#456DB5]'
       )}
     >

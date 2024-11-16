@@ -1,11 +1,16 @@
+import { cn } from '@/lib/utils';
 import type { VaultPosition } from '@/types';
 import { Info } from 'lucide-react';
 import Image from 'next/image';
 import PositionCard from './PositionCard';
 
-export default function Position({ vaultPosition }: Readonly<{ vaultPosition: VaultPosition }>) {
+export default function Position({
+  vaultPosition,
+  selected,
+  setSelectedVault
+}: Readonly<{ vaultPosition: VaultPosition, selected: boolean, setSelectedVault: (vault: VaultPosition) => void }>) {
   return (
-    <PositionCard>
+    <PositionCard selected={selected}>
       <div className="flex flex-col justify-between items-center h-full gap-4 p-4">
         <div className="flex justify-between items-center w-full">
           <div className="flex items-center gap-2">
@@ -36,7 +41,7 @@ export default function Position({ vaultPosition }: Readonly<{ vaultPosition: Va
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Net APY</span>
-          <span>100,000</span>
+          <span>{(vaultPosition.vault.dailyApys?.netApy * 100).toFixed(2)}%</span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>
@@ -51,11 +56,7 @@ export default function Position({ vaultPosition }: Readonly<{ vaultPosition: Va
             ))}
           </div>
         </div>
-        <div className="flex justify-between items-center w-full">
-          <span>Collateral</span>
-          <span>[logos here?]</span>
-        </div>
-        <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2">Select Position</button>
+        <button className={cn("text-xl w-full rounded-[16px] py-2", !selected ? 'bg-[#456DB5]' : 'bg-[#2f3434]')} onClick={() => setSelectedVault(vaultPosition)}>{selected ? 'Selected' : 'Select Position'}</button>
       </div>
     </PositionCard>
   );

@@ -7,16 +7,20 @@ import Position from './Position';
 
 export default function MyPositions({
   vaults,
-  loading = true
-}: Readonly<{
-  vaults: VaultPosition[];
-  loading: boolean;
+  loading = true,
+  selectedVault,
+  setSelectedVault 
+}: Readonly<{ 
+  vaults: VaultPosition[], 
+  loading: boolean,
+  selectedVault: VaultPosition | null,
+  setSelectedVault: (vault: VaultPosition) => void
 }>) {
   return (
     <div
       style={{ minHeight: '60vh' }}
       className={cn(
-        'w-full h-full border border-[#456DB5] bg-[#1B1D1F] rounded-xl grid justify-between items-center',
+        'w-full h-full rounded-xl grid justify-between items-center',
         'gap-8 relative',
         !vaults || loading || vaults.filter((e) => e.assetsUsd > 0).length > 1 ? 'grid-cols-2' : 'grid-cols-1'
       )}
@@ -34,7 +38,7 @@ export default function MyPositions({
         <>
           {vaults.map((item) => {
             if (item.assetsUsd > 0) {
-              return <Position key={item.vault.address} vaultPosition={item} />;
+              return <Position key={item.vault.address} vaultPosition={item} selected={selectedVault?.id === item.id} setSelectedVault={setSelectedVault}/>
             }
           })}
         </>

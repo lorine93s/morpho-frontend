@@ -6,7 +6,15 @@ import { formatEther, formatUnits } from 'viem';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { Loading } from './Loading';
 
-export default function MaxSupplyToken({ asset, handleMax }: { asset: Asset; handleMax: (max: string) => void }) {
+export default function MaxSupplyToken({
+  asset,
+  symbol,
+  handleMax
+}: {
+  asset: Asset;
+  symbol?: string;
+  handleMax: (max: string) => void;
+}) {
   const { address } = useAccount();
   const WETH = useWETH();
   const { data, isLoading } = useReadContract({
@@ -33,7 +41,7 @@ export default function MaxSupplyToken({ asset, handleMax }: { asset: Asset; han
     <>
       <span className="text-[#878888]">
         Balance&nbsp;
-        {balance} {asset.address === WETH && 'ETH'}
+        {balance} {asset.address === WETH ? 'ETH' : asset.symbol ? `${asset.symbol}` : ''}
       </span>
       <button className="text-[#456DB5]" onClick={() => handleMax(balance)}>
         Max

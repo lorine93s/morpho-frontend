@@ -9,8 +9,8 @@ import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 
 const GET_POSITIONS = gql`
-query getUserPositions($address: String!) {
-  userByAddress(address: $address) {
+query getUserPositions($address: String!, $chainId: Int) {
+  userByAddress(address: $address, chainId: $chainId) {
     vaultPositions {
       id
       shares
@@ -24,6 +24,8 @@ query getUserPositions($address: String!) {
           decimals
           symbol
           logoURI
+          address
+          name
         }
         dailyApys {
           apy
@@ -55,9 +57,16 @@ export default function Page() {
   const { chain, address } = useAccount();
 
   const { data, loading } = useQuery(GET_POSITIONS, {
-    variables: { address, chainId: [chain?.id as number] },
-    skip: !chain?.id
+    variables: { address, chainId: chain?.id as number },
+    //skip: !chain?.id
   });
+
+  const [selectedVault, setSelectedVault] = useState<VaultPosition | null>(null);
+
+  const selectVault = (vault: VaultPosition) => {
+    setSelectedVault(vault);
+    console.log("selected vault", selectedVault);
+  }
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,12 +80,12 @@ export default function Page() {
   return (
     <div className="grid grid-cols-3">
       <div className="col-span-1 px-8">
-        <ManagePositionsForm vaults={data?.userByAddress?.vaultPositions}/>
+        <ManagePositionsForm selectedVault={selectedVault}/>
       </div>
       <div className="col-span-2 flex justify-between">
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
-          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading}/>
+          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading} selectedVault={selectedVault} setSelectedVault={setSelectedVault}/>
         </div>
       </div>
     </div>
