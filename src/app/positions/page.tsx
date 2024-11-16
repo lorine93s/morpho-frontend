@@ -19,6 +19,12 @@ query getUserPositions($address: String!) {
       vault {
         address
         id
+        name
+        asset {
+          decimals
+          symbol
+          logoURI
+        }
         dailyApys {
           apy
           netApy

@@ -3,6 +3,7 @@
 import { cn } from '@/lib/utils';
 import { VaultPosition } from '@/types';
 import { Loading } from './Loading';
+import Position from './Position';
 
 export default function MyPositions({ 
   vaults,
@@ -12,10 +13,11 @@ export default function MyPositions({
   loading: boolean 
 }>) {
   return (
-    <div
+    <div style={{minHeight: '60vh'}}
       className={cn(
-        'w-full h-full border border-[#456DB5] bg-[#1B1D1F] rounded-xl grid grid-cols-2 justify-between items-center',
-        'gap-8 relative'
+        'w-full h-full border border-[#456DB5] bg-[#1B1D1F] rounded-xl grid justify-between items-center',
+        'gap-8 relative',
+        !vaults || loading || (vaults.filter(e => e.assetsUsd > 0).length > 1) ? 'grid-cols-2' : 'grid-cols-1'
       )}
     >
       { loading ?
@@ -26,9 +28,13 @@ export default function MyPositions({
         <div key={item} className="h-[35vh] col-span-1 bg-[#1f2324] border border-[#456DB5] rounded-xl"></div>
       ))}
           </>
-        ) : vaults && vaults.length > 0 ? (
+        ) : vaults && vaults.length > 0  && vaults.some(e => e.assetsUsd > 0)? (
           <>
-          
+          {vaults.map((item) => {
+            if (item.assetsUsd > 0) {
+              return <Position key={item.vault.address} vaultPosition={item}/>
+            }
+          })}
           </>
         ) : (
           <>

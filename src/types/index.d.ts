@@ -30,6 +30,20 @@ export interface VaultItem {
     fee: number;
     timelock: number;
   };
+  asset?: {
+    decimals: number;
+    symbol: string;
+    logoURI: string;
+  };
+  metadata?: {
+    curators: {
+      name: string;
+      image: string;
+      link: string;
+    }[];
+    image: string;
+    description: string;
+  };
   curators: {
     name: string;
     image: string;
