@@ -1,15 +1,19 @@
-import { formatCurrencyCompact, formatDigitalCurrency } from '@/lib/utils';
+import { cn, formatCurrencyCompact, formatDigitalCurrency } from '@/lib/utils';
 import type { Asset, VaultItem } from '@/types';
 import { Info } from 'lucide-react';
 import Image from 'next/image';
 import { formatUnits } from 'viem';
 import VaultCard from './VaultCard';
+import VaultImage from './VaultImage';
 
 export default function Vault({
   vaultType,
   asset,
   vault
 }: Readonly<{ vaultType: 'apy' | 'tvl' | 'curator'; asset: Asset; vault: VaultItem }>) {
+  const totalCollateral = vault.state.allocation.filter(
+    (collateral) => collateral.supplyAssets > 0 && collateral.market.collateralAsset?.logoURI
+  );
   return (
     <VaultCard>
       <div className="flex flex-col justify-between items-center h-full gap-4 p-4">
@@ -71,7 +75,24 @@ export default function Vault({
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Collateral</span>
-          <span>100,000</span>
+          <div
+            className={cn(
+              'flex items-center flex-wrap justify-center',
+              totalCollateral.length > 9
+                ? 'mr-1 max-w-[180px] flex-wrap leading-none'
+                : totalCollateral.length > 1
+                  ? 'mr-3'
+                  : ''
+            )}
+          >
+            {totalCollateral.map((collateral) => (
+              <VaultImage
+                collateral={collateral}
+                totalCollateral={totalCollateral}
+                key={collateral.market.collateralAsset!.logoURI + collateral.supplyAssets}
+              />
+            ))}
+          </div>
         </div>
         <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2">Select Position</button>
       </div>

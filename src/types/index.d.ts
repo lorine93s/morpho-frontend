@@ -11,6 +11,13 @@ export interface Asset {
   highAPY2Vault?: VaultItem;
 }
 
+export interface Collateral {
+  market: {
+    collateralAsset: Asset;
+  };
+  supplyAssets: number;
+}
+
 export interface VaultItem {
   id: string;
   address: string;
@@ -30,6 +37,7 @@ export interface VaultItem {
     totalAssetsUsd: number;
     fee: number;
     timelock: number;
+    allocation: Collateral[];
   };
   curators: {
     name: string;

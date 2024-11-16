@@ -42,6 +42,15 @@ const GET_ASSETS = gql`
           totalAssetsUsd
           fee
           timelock
+          allocation {
+            market {
+              collateralAsset {
+                logoURI
+                name
+              }
+            }
+            supplyAssets
+          }
         }
         metadata {
           curators {
@@ -55,6 +64,7 @@ const GET_ASSETS = gql`
   }
 `;
 
+// TODO: first question vault APY is not the same
 export default function SelectSupplyToken() {
   const [amount, setAmount] = useState('');
   const { chain } = useAccount();
@@ -104,7 +114,8 @@ export default function SelectSupplyToken() {
                 totalAssets: item.state.totalAssets,
                 totalAssetsUsd: item.state.totalAssetsUsd,
                 fee: item.state.fee,
-                timelock: item.state.timelock
+                timelock: item.state.timelock,
+                allocation: item.state.allocation
               },
               curators: item.metadata.curators
             });
