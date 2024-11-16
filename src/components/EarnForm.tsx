@@ -1,28 +1,38 @@
 'use client';
 
 import { useAppContext } from '@/contexts/AppContext';
+import { useToast } from '@/hooks/use-toast';
 import { useMorphoChainAgnosticBundlerV2 } from '@/hooks/useMorphoChainAgnosticBundlerV2';
+import { useWETH } from '@/hooks/useWETH';
 import { cn } from '@/lib/utils';
 import abi from '@/shared/abi/MorphoChainAgnosticBundlerV2.json';
 import { BundlerAction } from '@morpho-org/morpho-blue-bundlers/pkg';
-import { useState } from 'react';
-import { encodeFunctionData } from 'viem';
-// TODO: useWaitForTransactionReceipt and toast
-import { useWETH } from '@/hooks/useWETH';
-import { parseEther, parseUnits } from 'viem';
+import { useEffect, useState } from 'react';
+import { encodeFunctionData, parseEther, parseUnits } from 'viem';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
 export default function EarnForm() {
+  const { toast } = useToast();
   const { address, isConnected } = useAccount();
   const WETH = useWETH();
   const [amount, setAmount] = useState('');
   const { selectedAsset, selectedVault } = useAppContext();
   const finalAmount =
     selectedAsset?.address === WETH ? parseEther(amount) : parseUnits(amount, selectedAsset?.decimals || 18);
-  const { data: hash, error, sendTransactionAsync } = useSendTransaction();
+  const { data: hash, sendTransactionAsync } = useSendTransaction();
+  const { isSuccess } = useWaitForTransactionReceipt({ hash });
   const bundlerAddress = useMorphoChainAgnosticBundlerV2();
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: 'Transaction successful',
+        description: 'Transaction hash: ' + hash
+      });
+    }
+  }, [isSuccess, toast, hash]);
 
   const finalizeTransaction = async () => {
     if (!selectedVault) {
