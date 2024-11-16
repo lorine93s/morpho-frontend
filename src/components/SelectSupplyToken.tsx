@@ -65,6 +65,7 @@ const GET_ASSETS = gql`
 `;
 
 // TODO: first question vault APY is not the same
+// TODO: check all calculations + high apy, gaunlet, etc is correct
 export default function SelectSupplyToken() {
   const [amount, setAmount] = useState('');
   const { chain } = useAccount();
