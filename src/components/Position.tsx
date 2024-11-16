@@ -4,8 +4,9 @@ import Image from 'next/image';
 import PositionCard from './PositionCard';
 
 export default function Position({
-  vaultPosition
-}: Readonly<{ vaultPosition: VaultPosition }>) {
+  vaultPosition,
+  setSelectedVault
+}: Readonly<{ vaultPosition: VaultPosition, setSelectedVault: (vault: VaultPosition) => void }>) {
   return (
     <PositionCard>
       <div className="flex flex-col justify-between items-center h-full gap-4 p-4">
@@ -41,7 +42,7 @@ export default function Position({
             ))}
           </div>
         </div>
-        <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2">Select Position</button>
+        <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2" onClick={() => setSelectedVault(vaultPosition)}>Select Position</button>
       </div>
     </PositionCard>
   );

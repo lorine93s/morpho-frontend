@@ -59,6 +59,13 @@ export default function Page() {
     //skip: !chain?.id
   });
 
+  const [selectedVault, setSelectedVault] = useState<VaultPosition | null>(null);
+
+  const selectVault = (vault: VaultPosition) => {
+    setSelectedVault(vault);
+    console.log("selected vault", selectedVault);
+  }
+
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -71,12 +78,12 @@ export default function Page() {
   return (
     <div className="grid grid-cols-3">
       <div className="col-span-1 px-8">
-        <ManagePositionsForm vaults={data?.userByAddress?.vaultPositions}/>
+        <ManagePositionsForm selectedVault={selectedVault}/>
       </div>
       <div className="col-span-2 flex justify-between">
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
-          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading}/>
+          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading} setSelectedVault={setSelectedVault}/>
         </div>
       </div>
     </div>
