@@ -13,10 +13,10 @@ export default function AvailableVaults() {
       className={cn(
         'w-full h-full rounded-xl grid justify-between items-center',
         'gap-8 relative',
-        (selectedAsset?.highAPY1Vault && selectedAsset?.highAPY2Vault) ||
+        ((selectedAsset?.highAPY1Vault && selectedAsset?.highAPY2Vault) ||
           (selectedAsset?.highAPY1Vault && selectedAsset?.highTVLVault) ||
           (selectedAsset?.highAPY1Vault && selectedAsset?.trustedCuratorVault) ||
-          (selectedAsset?.highTVLVault && selectedAsset?.trustedCuratorVault)
+          (selectedAsset?.highTVLVault && selectedAsset?.trustedCuratorVault) || !selectedAsset)
           ? 'grid-cols-2'
           : 'grid-cols-1'
       )}

@@ -8,8 +8,8 @@ import Link from "next/link";
 
 export default function Page() {
   return (
-    <div className="flex flex-col items-center mt-[10vh] h-screen">
-      <h1 className="text-4xl font-bold">Frequently Asked Questions</h1>
+    <div className="flex flex-col items-center pt-[10vh]">
+      <h1 className="mb-4 text-4xl font-bold">Frequently Asked Questions</h1>
       <Accordion type="single" collapsible className="w-full max-w-[600px]">
         <AccordionItem value="item-1">
           <AccordionTrigger>What is Morpho?</AccordionTrigger>
@@ -50,7 +50,7 @@ Morpho solves this by separating the risk management layer from the core protoco
           </AccordionContent>
           </AccordionItem><AccordionItem value="item-6">
           <AccordionTrigger>Has the protocol been formally verified?</AccordionTrigger>
-          <AccordionContent>
+          <AccordionContent> 
           Yes, the protocol has been properly verified using Certora. You can find more information in the <Link className="underline" href="https://docs.morpho.org/morpho/concepts/security/formal-verification">Formal Verification section</Link>.
           </AccordionContent>
 
