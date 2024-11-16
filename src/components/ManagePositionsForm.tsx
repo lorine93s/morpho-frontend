@@ -16,8 +16,18 @@ export default function ManagePositionsForm() {
       )}
     >
       <div className="flex flex-col w-full gap-4 justify-between items-center">
+<<<<<<< HEAD
       <h1 className="text-4xl font-[500] text-[#456DB5]">Manage Positions</h1>
         {isConnected && (<></>
+=======
+        <div className="w-full p-1.5 bg-[#343a3a] rounded-[28px] flex justify-between gap-2">
+              Manage Positions
+        </div>
+        {isConnected && (
+          <>
+            <SelectSupplyToken />
+          </>
+>>>>>>> e75d19ab511da3a569683c4ce92f5ad8b5dcd25c
         )}
       </div>
       <div className="flex flex-col gap-4 justify-between items-center">
