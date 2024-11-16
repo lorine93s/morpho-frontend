@@ -2,7 +2,8 @@
 
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { type Asset } from '@/types';
+import { TRUSTED_CURATOR_NAME } from '@/lib/constants';
+import type { Asset, VaultItem } from '@/types';
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -36,6 +37,11 @@ const GET_ASSETS = gql`
           totalAssetsUsd
           fee
           timelock
+        }
+        metadata {
+          curators {
+            name
+          }
         }
       }
     }
@@ -94,13 +100,26 @@ export default function SelectSupplyToken() {
                 totalAssetsUsd: item.state.totalAssetsUsd,
                 fee: item.state.fee,
                 timelock: item.state.timelock
+              },
+              curator: {
+                name: item.metadata.curators[0].name
               }
             });
           }
 
           return acc;
         }, [])
-        .filter((asset: Asset) => asset.vaults.length > 0);
+        .filter((asset: Asset) => asset.vaults.length > 0)
+        .map((_asset: Asset) => {
+          const trustedCurator = _asset.vaults.find((vault: VaultItem) => vault.curator.name === TRUSTED_CURATOR_NAME);
+          console.log('trustedCurator', trustedCurator);
+          // const asset = _asset.vaults.sort(
+          //   (a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd
+          // );
+
+          // console.log('asset', asset);
+          return _asset;
+        });
 
       setAssets(groupedAssets);
     }

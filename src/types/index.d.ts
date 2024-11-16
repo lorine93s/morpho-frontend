@@ -7,7 +7,7 @@ export interface Asset {
   vaults: VaultItem[];
 }
 
-interface VaultItem {
+export interface VaultItem {
   address: string;
   symbol: string;
   name: string;
@@ -24,5 +24,8 @@ interface VaultItem {
     totalAssetsUsd: number;
     fee: number;
     timelock: number;
+  };
+  curator: {
+    name: string;
   };
 }
