@@ -1,19 +1,17 @@
-import AvailableVaults from '@/components/AvailableVaults';
-import EarnForm from '@/components/EarnForm';
-import { Separator } from '@/components/ui/separator';
+import Link from "next/link";
 
 export default function Page() {
   return (
-    <div className="grid grid-cols-3">
-      <div className="col-span-1 px-8">
-        <EarnForm />
-      </div>
-      <div className="col-span-2 flex justify-between">
-        <Separator orientation="vertical" className="w-0.5" />
-        <div className="w-full px-8">
-          <AvailableVaults />
-        </div>
-      </div>
+    <div className="flex flex-col items-center mt-[10vh] h-screen">
+      <h1 className="text-4xl font-bold">The Easiest Way to Earn Sustainable Yield.</h1>
+      <p className="text-lg text-[#456DB5] mt-[2vh]">Morpho is a permissionless lending protocol that allows you to earn sustainable yield on your crypto.</p>
+      <Link href="/earn">
+        <button
+          className='mt-[2vh] text-xl w-full rounded-[16px] py-2 px-6 bg-[#456DB5]'
+        >
+            Start Earning
+          </button>
+      </Link>
     </div>
   );
 }

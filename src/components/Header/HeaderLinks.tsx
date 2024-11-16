@@ -9,9 +9,13 @@ export default function HeaderLinks() {
   const pathname = usePathname();
 
   const links = [
-    { href: '/', label: 'Earn' },
+    { href: '/', label: 'Home' },
+    { href: '/earn', label: 'Earn' },
     { href: '/positions', label: 'Your Positions' },
-    { href: '/rewards', label: 'Your Rewards' }
+    { href: '/faq', label: 'FAQ' },
+    /*{ href: '/rewards', label: 'Your Rewards' }*/
+    // we should show rewards on my positions and we don't need as detailed of a breakdown as Morpho has
+    // ideally users auto claim rewards when they withdraw or supply, as in liquity
   ];
 
   return (
