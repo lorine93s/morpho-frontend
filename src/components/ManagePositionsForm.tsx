@@ -1,11 +1,12 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { VaultPosition } from '@/types';
 import { gql, useQuery } from '@apollo/client';
 import { useAccount } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 
-export default function ManagePositionsForm() {
+export default function ManagePositionsForm({ vaults }: Readonly<{ vaults: VaultPosition[] }>) {
   const { isConnected } = useAccount();
 
   return (

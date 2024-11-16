@@ -48,26 +48,29 @@ query getUserPositions($address: String!) {
 export default function Page() {
   const { chain, address } = useAccount();
 
-  const [positions, setPositions] = useState<VaultPosition[]>([]);
-
   const { data, loading } = useQuery(GET_POSITIONS, {
     variables: { address, chainId: [chain?.id as number] },
     skip: !chain?.id
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     console.log("my positions data", data);
-  }, [data, loading]);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+  }, [data]);
 
   return (
     <div className="grid grid-cols-3">
       <div className="col-span-1 px-8">
-        <ManagePositionsForm />
+        <ManagePositionsForm vaults={data?.userByAddress?.vaultPositions}/>
       </div>
       <div className="col-span-2 flex justify-between">
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
-          <MyPositions />
+          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading}/>
         </div>
       </div>
     </div>
