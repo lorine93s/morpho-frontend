@@ -28,7 +28,7 @@ export default function Position({
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Net APY</span>
-          <span>100,000</span>
+          <span>{(vaultPosition.vault.dailyApys?.netApy * 100).toFixed(2)}%</span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>{vaultPosition.vault.metadata && vaultPosition.vault.metadata.curators.length > 1 ? 'Curators' : 'Curator'}</span>
@@ -40,10 +40,6 @@ export default function Position({
               </a>
             ))}
           </div>
-        </div>
-        <div className="flex justify-between items-center w-full">
-          <span>Collateral</span>
-          <span>[logos here?]</span>
         </div>
         <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2">Select Position</button>
       </div>

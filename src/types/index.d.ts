@@ -44,6 +44,10 @@ export interface VaultItem {
     symbol: string;
     logoURI: string;
   };
+  dailyApys?: {
+    apy: number;
+    netApy: number;
+  };
   metadata?: {
     curators: {
       name: string;
