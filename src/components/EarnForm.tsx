@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import abi from '@/shared/abi/MorphoChainAgnosticBundlerV2.json';
 import USDCABI from '@/shared/abi/USDC.json';
 import { BundlerAction } from '@morpho-org/morpho-blue-bundlers/pkg';
-import type { BigNumberish, Signature } from 'ethers';
+import { Signature } from 'ethers';
 import { useState } from 'react';
 import { encodeFunctionData } from 'viem';
 import {
@@ -23,10 +23,6 @@ import {
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
-function isValidBigNumberish(value): value is BigNumberish {
-  return typeof value === 'number' || typeof value === 'string' || typeof value === 'bigint';
-}
-
 export default function EarnForm() {
   const { signTypedDataAsync } = useSignTypedData();
   const { address, isConnected } = useAccount();
@@ -38,6 +34,7 @@ export default function EarnForm() {
   const bundlerAddress = useMorphoChainAgnosticBundlerV2();
   const { data: block } = useBlock();
   const USDC = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
+  const WETH = '0x4200000000000000000000000000000000000006';
 
   const deadline = (block?.timestamp ?? 0n) + 3600n;
   // TODO: check if decimals are being handled correctly when input usdc is 6 decimals
@@ -56,61 +53,33 @@ export default function EarnForm() {
   });
   const nonce = data?.[0]?.result ?? 0n;
 
-  const getSignature = async () => {
-    if (!selectedAsset || !address) {
-      return;
-    }
-
-    const domain = {
-      name: selectedAsset.name,
-      version: '1',
-      chainId: chainId,
-      verifyingContract: selectedAsset.address
-    };
-
-    const types = {
-      Permit: [
-        { name: 'owner', type: 'address' },
-        { name: 'spender', type: 'address' },
-        { name: 'value', type: 'uint256' },
-        { name: 'nonce', type: 'uint256' },
-        { name: 'deadline', type: 'uint256' }
-      ]
-    };
-
-    const value = {
-      owner: address,
-      spender: selectedVault!.address,
-      value: valueApproved,
-      nonce,
-      deadline
-    };
-
-    return await signTypedDataAsync({
-      domain,
-      types,
-      primaryType: 'Permit',
-      message: value
-    });
-  };
-
   const finalizeTransaction = async () => {
     console.log('getting signature');
-    const signature = await getSignature();
-    console.log('finalizeTransaction');
-    console.log('isValidBigNumberish approved', isValidBigNumberish(valueApproved));
-    console.log('isValidBigNumberish deadline', isValidBigNumberish(deadline));
+
+    const permitSingle = {
+      details: {
+        token: WETH,
+        amount: valueApproved,
+        nonce: Number(nonce),
+        expiration: 2n ** 48n - 1n
+      },
+      spender: bundlerAddress,
+      sigDeadline: 2n ** 48n - 1n
+    };
+
+    const signature = Signature.from(address);
+    console.log('signature', signature);
     const data = encodeFunctionData({
       abi,
       functionName: 'multicall',
-      args: [[BundlerAction.permit(USDC, valueApproved, deadline, signature as unknown as Signature, false)]]
+      args: [[BundlerAction.wrapNative(valueApproved), BundlerAction.approve2(permitSingle, signature, false)]]
     });
 
-    // await sendTransactionAsync({
-    //   to: bundlerAddress,
-    //   data: data,
-    //   value: 1000000n
-    // });
+    await sendTransactionAsync({
+      to: bundlerAddress,
+      data: data,
+      value: 1000000n
+    });
   };
 
   return (
