@@ -35,6 +35,7 @@ export default function AvailableVaults() {
           <span className="absolute text-center text-[#355180] text-5xl px-32 leading-loose">
             Please Select at least one token to see positions
           </span>
+          {/* TODO: look for grid-cols-1 for logic */}
           {[0, 1, 2, 3].map((item) => (
             <VaultCard key={item} />
           ))}

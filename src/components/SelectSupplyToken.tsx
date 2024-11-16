@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppContext } from '@/contexts/AppContext';
 import { TRUSTED_CURATOR_NAME } from '@/lib/constants';
-import type { Asset, VaultItem } from '@/types';
+import type { Asset, Vault } from '@/types';
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -64,8 +64,10 @@ const GET_ASSETS = gql`
   }
 `;
 
-export default function SelectSupplyToken() {
-  const [amount, setAmount] = useState('');
+export default function SelectSupplyToken({
+  amount,
+  setAmount
+}: Readonly<{ amount: string; setAmount: (amount: string) => void }>) {
   const { chain } = useAccount();
   const [assets, setAssets] = useState<Asset[]>([]);
   const { selectedAsset, setSelectedAsset } = useAppContext();
@@ -125,19 +127,17 @@ export default function SelectSupplyToken() {
         .filter((asset: Asset) => asset.vaults.length > 0)
         .map((_asset: Asset) => {
           const trustedCuratorVault = _asset.vaults
-            .filter((vault: VaultItem) => vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME))
-            .sort((a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd)
+            .filter((vault: Vault) => vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME))
+            .sort((a: Vault, b: Vault) => b.state.totalAssetsUsd - a.state.totalAssetsUsd)
             .shift();
-          const notrustedCuratorVaults = _asset.vaults.filter(
-            (vault: VaultItem) => vault.id !== trustedCuratorVault?.id
-          );
+          const notrustedCuratorVaults = _asset.vaults.filter((vault: Vault) => vault.id !== trustedCuratorVault?.id);
 
           const sortedByTVL = notrustedCuratorVaults.sort(
-            (a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd
+            (a: Vault, b: Vault) => b.state.totalAssetsUsd - a.state.totalAssetsUsd
           );
           const highTVLVault = sortedByTVL.shift();
 
-          const sortedByAPY = sortedByTVL.sort((a: VaultItem, b: VaultItem) => b.state.netApy - a.state.netApy);
+          const sortedByAPY = sortedByTVL.sort((a: Vault, b: Vault) => b.state.netApy - a.state.netApy);
           const highAPY1Vault = sortedByAPY.shift();
           const highAPY2Vault = sortedByAPY.shift();
 

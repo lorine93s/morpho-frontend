@@ -1,12 +1,49 @@
 'use client';
 
+import { useAppContext } from '@/contexts/AppContext';
+import { useMorphoChainAgnosticBundlerV2 } from '@/hooks/useMorphoChainAgnosticBundlerV2';
 import { cn } from '@/lib/utils';
-import { useAccount } from 'wagmi';
+import abi from '@/shared/abi/MorphoChainAgnosticBundlerV2.json';
+import { BundlerAction } from '@morpho-org/morpho-blue-bundlers/pkg';
+import { useState } from 'react';
+import { encodeFunctionData, parseEther } from 'viem';
+import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
 export default function EarnForm() {
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
+  // TODO: how are we setting amount as bigint?
+  const [amount, setAmount] = useState('');
+  const { selectedVault } = useAppContext();
+  const { data: hash, error, sendTransactionAsync } = useSendTransaction();
+  const bundlerAddress = useMorphoChainAgnosticBundlerV2();
+  console.log('hash', hash);
+  console.log('error', error);
+
+  const finalizeTransaction = async () => {
+    console.log('finalizeTransaction');
+    const data = encodeFunctionData({
+      abi,
+      functionName: 'multicall',
+      args: [
+        [
+          BundlerAction.wrapNative(1000000n),
+          BundlerAction.erc20Transfer(
+            '0x4200000000000000000000000000000000000006',
+            '0x75336b7F786dF5647f6B20Dc36eAb9E27D704894',
+            1000000n
+          )
+        ]
+      ]
+    });
+
+    await sendTransactionAsync({
+      to: bundlerAddress,
+      data: data,
+      value: 1000000n
+    });
+  };
 
   return (
     <div
@@ -19,7 +56,7 @@ export default function EarnForm() {
         <h1 className="text-4xl font-[500] text-[#456DB5]">Earn</h1>
         {isConnected && (
           <>
-            <SelectSupplyToken />
+            <SelectSupplyToken amount={amount} setAmount={setAmount} />
           </>
         )}
       </div>
@@ -27,7 +64,7 @@ export default function EarnForm() {
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        <FinalizeTransaction />
+        <FinalizeTransaction disabled={false} finalizeTransaction={finalizeTransaction} />
       </div>
     </div>
   );
