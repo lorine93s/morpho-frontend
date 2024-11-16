@@ -1,48 +1,116 @@
 'use client';
 
+// TODO: ! in encodedfunctiondata
 import { useAppContext } from '@/contexts/AppContext';
 import { useMorphoChainAgnosticBundlerV2 } from '@/hooks/useMorphoChainAgnosticBundlerV2';
 import { cn } from '@/lib/utils';
 import abi from '@/shared/abi/MorphoChainAgnosticBundlerV2.json';
+import USDCABI from '@/shared/abi/USDC.json';
 import { BundlerAction } from '@morpho-org/morpho-blue-bundlers/pkg';
+import type { BigNumberish, Signature } from 'ethers';
 import { useState } from 'react';
-import { encodeFunctionData, parseEther } from 'viem';
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
+import { encodeFunctionData } from 'viem';
+import {
+  useAccount,
+  useBlock,
+  useBlockNumber,
+  useChainId,
+  useReadContracts,
+  useSendTransaction,
+  useSignTypedData,
+  useWaitForTransactionReceipt
+} from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
+function isValidBigNumberish(value): value is BigNumberish {
+  return typeof value === 'number' || typeof value === 'string' || typeof value === 'bigint';
+}
+
 export default function EarnForm() {
+  const { signTypedDataAsync } = useSignTypedData();
   const { address, isConnected } = useAccount();
+  const chainId = useChainId();
   // TODO: how are we setting amount as bigint?
   const [amount, setAmount] = useState('');
-  const { selectedVault } = useAppContext();
+  const { selectedAsset, selectedVault } = useAppContext();
   const { data: hash, error, sendTransactionAsync } = useSendTransaction();
   const bundlerAddress = useMorphoChainAgnosticBundlerV2();
-  console.log('hash', hash);
-  console.log('error', error);
+  const { data: block } = useBlock();
+  const USDC = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913';
+
+  const deadline = (block?.timestamp ?? 0n) + 3600n;
+  // TODO: check if decimals are being handled correctly when input usdc is 6 decimals
+  const valueApproved = 1000000n;
+
+  // TODO: get selectedAsset address
+  const { data } = useReadContracts({
+    contracts: [
+      {
+        address: USDC,
+        abi: USDCABI,
+        functionName: 'nonces',
+        args: [address]
+      }
+    ]
+  });
+  const nonce = data?.[0]?.result ?? 0n;
+
+  const getSignature = async () => {
+    if (!selectedAsset || !address) {
+      return;
+    }
+
+    const domain = {
+      name: selectedAsset.name,
+      version: '1',
+      chainId: chainId,
+      verifyingContract: selectedAsset.address
+    };
+
+    const types = {
+      Permit: [
+        { name: 'owner', type: 'address' },
+        { name: 'spender', type: 'address' },
+        { name: 'value', type: 'uint256' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' }
+      ]
+    };
+
+    const value = {
+      owner: address,
+      spender: selectedVault!.address,
+      value: valueApproved,
+      nonce,
+      deadline
+    };
+
+    return await signTypedDataAsync({
+      domain,
+      types,
+      primaryType: 'Permit',
+      message: value
+    });
+  };
 
   const finalizeTransaction = async () => {
+    console.log('getting signature');
+    const signature = await getSignature();
     console.log('finalizeTransaction');
+    console.log('isValidBigNumberish approved', isValidBigNumberish(valueApproved));
+    console.log('isValidBigNumberish deadline', isValidBigNumberish(deadline));
     const data = encodeFunctionData({
       abi,
       functionName: 'multicall',
-      args: [
-        [
-          BundlerAction.wrapNative(1000000n),
-          BundlerAction.erc20Transfer(
-            '0x4200000000000000000000000000000000000006',
-            '0x75336b7F786dF5647f6B20Dc36eAb9E27D704894',
-            1000000n
-          )
-        ]
-      ]
+      args: [[BundlerAction.permit(USDC, valueApproved, deadline, signature as unknown as Signature, false)]]
     });
 
-    await sendTransactionAsync({
-      to: bundlerAddress,
-      data: data,
-      value: 1000000n
-    });
+    // await sendTransactionAsync({
+    //   to: bundlerAddress,
+    //   data: data,
+    //   value: 1000000n
+    // });
   };
 
   return (
@@ -64,7 +132,7 @@ export default function EarnForm() {
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        <FinalizeTransaction disabled={false} finalizeTransaction={finalizeTransaction} />
+        <FinalizeTransaction disabled={!(amount !== '' && selectedVault)} finalizeTransaction={finalizeTransaction} />
       </div>
     </div>
   );
