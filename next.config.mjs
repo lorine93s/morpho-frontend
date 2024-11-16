@@ -2,7 +2,13 @@
 const nextConfig = {
   reactStrictMode: false,
   images: {
-    domains: ['cdn.morpho.org']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'cdn.morpho.org',
+        pathname: '**'
+      }
+    ]
   },
   /**
    * @see{https://github.com/WalletConnect/walletconnect-monorepo/issues/1908}

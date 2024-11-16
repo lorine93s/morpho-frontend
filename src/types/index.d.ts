@@ -5,13 +5,21 @@ export interface Asset {
   symbol: string;
   decimals: number;
   vaults: VaultItem[];
-  trustedCurator?: VaultItem;
-  highTVL?: VaultItem;
-  highAPY1?: VaultItem;
-  highAPY2?: VaultItem;
+  trustedCuratorVault?: VaultItem;
+  highTVLVault?: VaultItem;
+  highAPY1Vault?: VaultItem;
+  highAPY2Vault?: VaultItem;
+}
+
+export interface Collateral {
+  market: {
+    collateralAsset: Asset;
+  };
+  supplyAssets: number;
 }
 
 export interface VaultItem {
+  id: string;
   address: string;
   symbol: string;
   name: string;
@@ -29,6 +37,7 @@ export interface VaultItem {
     totalAssetsUsd: number;
     fee: number;
     timelock: number;
+    allocation: Collateral[];
   };
   asset?: {
     decimals: number;
@@ -47,7 +56,7 @@ export interface VaultItem {
   curators: {
     name: string;
     image: string;
-    link: string;
+    url: string;
   }[];
 }
 

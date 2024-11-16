@@ -16,6 +16,7 @@ const GET_ASSETS = gql`
   query GetAssets($chainId: [Int!]) {
     vaults(where: { chainId_in: $chainId }) {
       items {
+        id
         address
         symbol
         name
@@ -41,6 +42,15 @@ const GET_ASSETS = gql`
           totalAssetsUsd
           fee
           timelock
+          allocation {
+            market {
+              collateralAsset {
+                logoURI
+                name
+              }
+            }
+            supplyAssets
+          }
         }
         metadata {
           curators {
@@ -86,6 +96,7 @@ export default function SelectSupplyToken() {
           if (item.state.netApy > 0 && item.whitelisted) {
             const targetAsset = acc.find((a) => a.address === asset.address);
             targetAsset?.vaults.push({
+              id: item.id,
               address: item.address,
               symbol: item.symbol,
               name: item.name,
@@ -102,7 +113,8 @@ export default function SelectSupplyToken() {
                 totalAssets: item.state.totalAssets,
                 totalAssetsUsd: item.state.totalAssetsUsd,
                 fee: item.state.fee,
-                timelock: item.state.timelock
+                timelock: item.state.timelock,
+                allocation: item.state.allocation
               },
               curators: item.metadata.curators
             });
@@ -112,31 +124,29 @@ export default function SelectSupplyToken() {
         }, [])
         .filter((asset: Asset) => asset.vaults.length > 0)
         .map((_asset: Asset) => {
-          const trustedCurator = _asset.vaults.find((vault: VaultItem) =>
-            vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
-          );
-          const noTrustedCuratorVaults = _asset.vaults.filter(
-            (vault: VaultItem) => !vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+          const trustedCuratorVault = _asset.vaults
+            .filter((vault: VaultItem) => vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME))
+            .sort((a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd)
+            .shift();
+          const notrustedCuratorVaults = _asset.vaults.filter(
+            (vault: VaultItem) => vault.id !== trustedCuratorVault?.id
           );
 
-          const sortedByTVL = noTrustedCuratorVaults
-            .filter(
-              (vault: VaultItem) =>
-                !trustedCurator || !vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
-            )
-            .sort((a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd);
-          const highTVL = sortedByTVL.shift();
+          const sortedByTVL = notrustedCuratorVaults.sort(
+            (a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd
+          );
+          const highTVLVault = sortedByTVL.shift();
 
           const sortedByAPY = sortedByTVL.sort((a: VaultItem, b: VaultItem) => b.state.netApy - a.state.netApy);
-          const highAPY1 = sortedByAPY.shift();
-          const highAPY2 = sortedByAPY.shift();
+          const highAPY1Vault = sortedByAPY.shift();
+          const highAPY2Vault = sortedByAPY.shift();
 
           const asset = {
             ..._asset,
-            trustedCurator,
-            highTVL,
-            highAPY1,
-            highAPY2
+            trustedCuratorVault,
+            highTVLVault,
+            highAPY1Vault,
+            highAPY2Vault
           };
 
           return asset;

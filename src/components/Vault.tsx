@@ -1,13 +1,19 @@
+import { cn, formatCurrencyCompact, formatDigitalCurrency } from '@/lib/utils';
 import type { Asset, VaultItem } from '@/types';
 import { Info } from 'lucide-react';
 import Image from 'next/image';
+import { formatUnits } from 'viem';
 import VaultCard from './VaultCard';
+import VaultImage from './VaultImage';
 
 export default function Vault({
   vaultType,
   asset,
   vault
 }: Readonly<{ vaultType: 'apy' | 'tvl' | 'curator'; asset: Asset; vault: VaultItem }>) {
+  const totalCollateral = vault.state.allocation.filter(
+    (collateral) => collateral.supplyAssets > 0 && collateral.market.collateralAsset?.logoURI
+  );
   return (
     <VaultCard>
       <div className="flex flex-col justify-between items-center h-full gap-4 p-4">
@@ -42,18 +48,26 @@ export default function Vault({
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Total Supply</span>
-          <span>100,000</span>
+          <div className="flex items-center gap-1">
+            <span>
+              {formatDigitalCurrency(Number(formatUnits(BigInt(vault.state.totalAssets), asset.decimals)))}&nbsp;
+              {asset.symbol}
+            </span>
+            <span className="bg-[#363b3b] rounded-md text-xs p-1">
+              {formatCurrencyCompact(vault.state.totalAssetsUsd)}
+            </span>
+          </div>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Net APY</span>
-          <span>100,000</span>
+          <span>{(vault.state.netApy * 100).toFixed(2)}%</span>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>{vault.curators.length > 1 ? 'Curators' : 'Curator'}</span>
           <div className="flex items-center gap-2">
             {vault.curators.map((curator) => (
-              <a className="flex items-center" key={curator.name} href={curator.link} target="_blank">
-                <Image src={curator.image} alt={curator.name} width={28} height={28} />
+              <a className="flex items-center" key={curator.name} href={curator.url} target="_blank">
+                <Image src={curator.image} alt={curator.name} width={28} height={28} className="mr-1" />
                 <span>{curator.name}</span>
               </a>
             ))}
@@ -61,7 +75,24 @@ export default function Vault({
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Collateral</span>
-          <span>100,000</span>
+          <div
+            className={cn(
+              'flex items-center flex-wrap justify-center',
+              totalCollateral.length > 9
+                ? 'mr-1 max-w-[180px] flex-wrap leading-none'
+                : totalCollateral.length > 1
+                  ? 'mr-3'
+                  : ''
+            )}
+          >
+            {totalCollateral.map((collateral) => (
+              <VaultImage
+                collateral={collateral}
+                totalCollateral={totalCollateral}
+                key={collateral.market.collateralAsset!.logoURI + collateral.supplyAssets}
+              />
+            ))}
+          </div>
         </div>
         <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2">Select Position</button>
       </div>
