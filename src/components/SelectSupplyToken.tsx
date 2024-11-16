@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useAppContext } from '@/contexts/AppContext';
 import { TRUSTED_CURATOR_NAME } from '@/lib/constants';
 import type { Asset, VaultItem } from '@/types';
 import { gql, useQuery } from '@apollo/client';
@@ -29,6 +30,9 @@ const GET_ASSETS = gql`
           symbol
           decimals
         }
+        chain {
+          network
+        }
         state {
           id
           apy
@@ -41,22 +45,20 @@ const GET_ASSETS = gql`
         metadata {
           curators {
             name
+            image
+            url
           }
         }
       }
     }
   }
 `;
-// TODO: info links to morpho page for that vault and remove more information button
-// TODO: gauntlet and if not gauntlet, two based on tvl, do it so gauntlet can be replaced
-// TODO: first order by tvl, then by apy
-// TODO: select new position as starting position
+
 export default function SelectSupplyToken() {
   const [amount, setAmount] = useState('');
   const { chain } = useAccount();
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
-
+  const { selectedAsset, setSelectedAsset } = useAppContext();
   const { data, loading } = useQuery(GET_ASSETS, {
     variables: { chainId: [chain?.id as number] },
     skip: !chain?.id
@@ -92,6 +94,7 @@ export default function SelectSupplyToken() {
               creationTimestamp: item.creationTimestamp,
               creatorAddress: item.creatorAddress,
               whitelisted: item.whitelisted,
+              network: item.chain.network,
               state: {
                 id: item.state.id,
                 apy: item.state.apy,
@@ -101,9 +104,7 @@ export default function SelectSupplyToken() {
                 fee: item.state.fee,
                 timelock: item.state.timelock
               },
-              curator: {
-                name: item.metadata.curators[0].name
-              }
+              curators: item.metadata.curators
             });
           }
 
@@ -111,14 +112,34 @@ export default function SelectSupplyToken() {
         }, [])
         .filter((asset: Asset) => asset.vaults.length > 0)
         .map((_asset: Asset) => {
-          const trustedCurator = _asset.vaults.find((vault: VaultItem) => vault.curator.name === TRUSTED_CURATOR_NAME);
-          console.log('trustedCurator', trustedCurator);
-          // const asset = _asset.vaults.sort(
-          //   (a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd
-          // );
+          const trustedCurator = _asset.vaults.find((vault: VaultItem) =>
+            vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+          );
+          const noTrustedCuratorVaults = _asset.vaults.filter(
+            (vault: VaultItem) => !vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+          );
 
-          // console.log('asset', asset);
-          return _asset;
+          const sortedByTVL = noTrustedCuratorVaults
+            .filter(
+              (vault: VaultItem) =>
+                !trustedCurator || !vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
+            )
+            .sort((a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd);
+          const highTVL = sortedByTVL.shift();
+
+          const sortedByAPY = sortedByTVL.sort((a: VaultItem, b: VaultItem) => b.state.netApy - a.state.netApy);
+          const highAPY1 = sortedByAPY.shift();
+          const highAPY2 = sortedByAPY.shift();
+
+          const asset = {
+            ..._asset,
+            trustedCurator,
+            highTVL,
+            highAPY1,
+            highAPY2
+          };
+
+          return asset;
         });
 
       setAssets(groupedAssets);
@@ -146,7 +167,7 @@ export default function SelectSupplyToken() {
       <div className="relative">
         <Input value={amount} onChange={handleAmountChange} placeholder="0.0" className="text-base" />
         <Select onValueChange={handleTokenChange}>
-          <SelectTrigger className="w-2/5 absolute top-0" disabled={loading}>
+          <SelectTrigger className="w-2/5 absolute top-0" disabled={loading || assets.length === 0}>
             {loading ? <Loading /> : <SelectValue placeholder="Select token" />}
           </SelectTrigger>
           <SelectContent>
