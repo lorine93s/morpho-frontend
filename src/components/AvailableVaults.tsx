@@ -5,14 +5,18 @@ import { cn } from '@/lib/utils';
 import Vault from './Vault';
 import VaultCard from './VaultCard';
 
-export default function AvailableVaults() {
+export default function AvailableVaults({ availableVaults }: Readonly<{ availableVaults: VaultPosition[] }>) {
   const { selectedAsset } = useAppContext();
 
   return (
     <div
       className={cn(
-        'w-full h-full border border-[#456DB5] bg-[#1B1D1F] rounded-xl grid grid-cols-2 justify-between items-center',
-        'gap-8 relative'
+        'w-full h-full rounded-xl grid justify-between items-center',
+        'gap-8 relative',
+        (selectedAsset?.highAPY1Vault && selectedAsset?.highAPY2Vault) 
+        || (selectedAsset?.highAPY1Vault && selectedAsset?.highTVLVault) 
+        || (selectedAsset?.highAPY1Vault && selectedAsset?.trustedCuratorVault)
+        || (selectedAsset?.highTVLVault && selectedAsset?.trustedCuratorVault) ? 'grid-cols-2' : 'grid-cols-1'
       )}
     >
       {selectedAsset ? (

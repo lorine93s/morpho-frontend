@@ -5,7 +5,7 @@ import { formatUnits } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
 import { Loading } from './Loading';
 
-export default function MaxSupplyToken({ asset, handleMax }: { asset: Asset; handleMax: (max: string) => void }) {
+export default function MaxSupplyToken({ asset, symbol, handleMax }: { asset: Asset; symbol?: string, handleMax: (max: string) => void }) {
   const { address } = useAccount();
   const { data, isLoading } = useReadContract({
     abi: [
@@ -26,7 +26,7 @@ export default function MaxSupplyToken({ asset, handleMax }: { asset: Asset; han
     <Loading />
   ) : (
     <>
-      <span className="text-[#878888]">Balance {formatUnits(data ?? 0n, asset.decimals)}</span>
+      <span className="text-[#878888]">Balance {formatUnits(data ?? 0n, asset.decimals)}{asset.symbol ? ` ${asset.symbol}` : ''}</span>
       <button className="text-[#456DB5]" onClick={() => handleMax(formatUnits(data ?? 0n, asset.decimals))}>
         Max
       </button>
