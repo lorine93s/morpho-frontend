@@ -5,7 +5,9 @@ import MyPositions from '@/components/MyPositions';
 import { Separator } from '@/components/ui/separator';
 import type { VaultPosition } from '@/types';
 import { gql, useQuery } from '@apollo/client';
+import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
+
 const GET_POSITIONS = gql`
 query getUserPositions($address: String!) {
   userByAddress(address: $address) {
@@ -44,18 +46,18 @@ query getUserPositions($address: String!) {
 `;
 
 export default function Page() {
-  const { chain } = useAccount();
+  const { chain, address } = useAccount();
 
   const [positions, setPositions] = useState<VaultPosition[]>([]);
 
-  useEffect(() => {
-    const { data, loading } = useQuery(GET_POSITIONS, {
-      variables: { chainId: [chain?.id as number] },
-      skip: !chain?.id
-    });
+  const { data, loading } = useQuery(GET_POSITIONS, {
+    variables: { address, chainId: [chain?.id as number] },
+    skip: !chain?.id
+  });
 
-    setPositions(data?.userByAddress?.vaultPositions || []);
-  }, [chain]);
+  useEffect(() => {
+    console.log("my positions data", data);
+  }, [data, loading]);
 
   return (
     <div className="grid grid-cols-3">

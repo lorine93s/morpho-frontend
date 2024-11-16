@@ -36,3 +36,11 @@ export interface VaultItem {
     link: string;
   }[];
 }
+
+export interface VaultPosition {
+  id: string;
+  shares: number;
+  assets: number;
+  assetsUsd: number;
+  vault: VaultItem;
+}
