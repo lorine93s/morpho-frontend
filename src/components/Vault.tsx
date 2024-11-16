@@ -12,7 +12,7 @@ export default function Vault({
   asset,
   vault
 }: Readonly<{ vaultType: 'apy' | 'tvl' | 'curator'; asset: Asset; vault: Vault }>) {
-  const { setSelectedVault } = useAppContext();
+  const { setSelectedVault, selectedVault } = useAppContext();
   const totalCollateral = vault.state.allocation.filter(
     (collateral) => collateral.supplyAssets > 0 && collateral.market.collateralAsset?.logoURI
   );
@@ -96,8 +96,8 @@ export default function Vault({
             ))}
           </div>
         </div>
-        <button className="text-xl w-full rounded-[16px] bg-[#456DB5] py-2" onClick={() => setSelectedVault(vault)}>
-          Select Position
+        <button className={cn("text-xl w-full rounded-[16px] bg-[#456DB5] py-2", vault?.id === selectedVault?.id && 'bg-[#2f3434]')} onClick={() => setSelectedVault(vault)}>
+          {vault?.id === selectedVault?.id ? 'Selected' : 'Select Position'}
         </button>
       </div>
     </VaultCard>
