@@ -2,11 +2,13 @@
 
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { type Asset } from '@/types';
 import { gql, useQuery } from '@apollo/client';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Loading } from './Loading';
+import MaxSupplyToken from './MaxSupplyToken';
 
 const GET_ASSETS = gql`
   query GetAssets($chainId: [Int!]) {
@@ -39,40 +41,15 @@ const GET_ASSETS = gql`
     }
   }
 `;
-
-interface Asset {
-  address: string;
-  logoURI: string;
-  name: string;
-  symbol: string;
-  decimals: number;
-  vaults: VaultItem[];
-}
-
-interface VaultItem {
-  address: string;
-  symbol: string;
-  name: string;
-  decimals: number;
-  creationBlockNumber: number;
-  creationTimestamp: string;
-  creatorAddress: string;
-  whitelisted: boolean;
-  state: {
-    id: string;
-    apy: number;
-    netApy: number;
-    totalAssets: number;
-    totalAssetsUsd: number;
-    fee: number;
-    timelock: number;
-  };
-}
-
+// TODO: info links to morpho page for that vault and remove more information button
+// TODO: gauntlet and if not gauntlet, two based on tvl, do it so gauntlet can be replaced
+// TODO: first order by tvl, then by apy
+// TODO: select new position as starting position
 export default function SelectSupplyToken() {
   const [amount, setAmount] = useState('');
   const { chain } = useAccount();
   const [assets, setAssets] = useState<Asset[]>([]);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | undefined>(undefined);
 
   const { data, loading } = useQuery(GET_ASSETS, {
     variables: { chainId: [chain?.id as number] },
@@ -136,18 +113,26 @@ export default function SelectSupplyToken() {
     }
   };
 
+  const handleTokenChange = (value: string) => {
+    setSelectedAsset(JSON.parse(value));
+  };
+
+  const handleMax = (max: string) => {
+    setAmount(max);
+  };
+
   return (
     <div className="flex flex-col justify-between bg-[#343a3a] w-full p-4 gap-4 rounded-xl">
       <span className="text-xl w-full text-left">Select Supply Token</span>
       <div className="relative">
-        <Input value={amount} onChange={handleAmountChange} placeholder="0.0" />
-        <Select>
+        <Input value={amount} onChange={handleAmountChange} placeholder="0.0" className="text-base" />
+        <Select onValueChange={handleTokenChange}>
           <SelectTrigger className="w-2/5 absolute top-0" disabled={loading}>
             {loading ? <Loading /> : <SelectValue placeholder="Select token" />}
           </SelectTrigger>
           <SelectContent>
             {assets.map((asset: Asset) => (
-              <SelectItem key={asset.address} value={asset.address} className="p-2">
+              <SelectItem key={asset.address} value={JSON.stringify(asset)} className="p-2">
                 <div className="flex flex-row items-center justify-between gap-4 cursor-pointer">
                   <Image src={asset.logoURI} alt={asset.name} width={24} height={24} />
                   <span className="text-base">{asset.symbol}</span>
@@ -156,6 +141,10 @@ export default function SelectSupplyToken() {
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="flex justify-end items-baseline gap-2 mr-4 text-sm min-h-5">
+        {selectedAsset && <MaxSupplyToken asset={selectedAsset} handleMax={handleMax} />}
       </div>
     </div>
   );
