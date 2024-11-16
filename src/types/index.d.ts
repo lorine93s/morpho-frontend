@@ -39,11 +39,7 @@ export interface Vault {
     timelock: number;
     allocation: Collateral[];
   };
-  asset?: {
-    decimals: number;
-    symbol: string;
-    logoURI: string;
-  };
+  asset?: Asset;
   dailyApys?: {
     apy: number;
     netApy: number;

@@ -24,6 +24,8 @@ query getUserPositions($address: String!, $chainId: Int) {
           decimals
           symbol
           logoURI
+          address
+          name
         }
         dailyApys {
           apy
@@ -83,7 +85,7 @@ export default function Page() {
       <div className="col-span-2 flex justify-between">
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
-          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading} setSelectedVault={setSelectedVault}/>
+          <MyPositions vaults={data?.userByAddress?.vaultPositions} loading={isLoading || loading} selectedVault={selectedVault} setSelectedVault={setSelectedVault}/>
         </div>
       </div>
     </div>

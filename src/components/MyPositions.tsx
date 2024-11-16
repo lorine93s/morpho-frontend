@@ -8,10 +8,12 @@ import Position from './Position';
 export default function MyPositions({
   vaults,
   loading = true,
+  selectedVault,
   setSelectedVault 
 }: Readonly<{ 
   vaults: VaultPosition[], 
   loading: boolean,
+  selectedVault: VaultPosition | null,
   setSelectedVault: (vault: VaultPosition) => void
 }>) {
   return (
@@ -36,7 +38,7 @@ export default function MyPositions({
         <>
           {vaults.map((item) => {
             if (item.assetsUsd > 0) {
-              return <Position key={item.vault.address} vaultPosition={item} setSelectedVault={setSelectedVault}/>
+              return <Position key={item.vault.address} vaultPosition={item} selected={selectedVault?.id === item.id} setSelectedVault={setSelectedVault}/>
             }
           })}
         </>
