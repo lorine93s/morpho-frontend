@@ -23,7 +23,7 @@ export default function FinalizeTransaction({
             </button>
           );
         }
-        // TODO: toast here
+
         return (
           <button
             className={cn('text-2xl w-full rounded-[16px] py-2', disabled ? 'bg-[#2c2d2d]' : 'bg-[#456DB5]')}

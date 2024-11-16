@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import Vault from './Vault';
 import VaultCard from './VaultCard';
 
-export default function AvailableVaults({ availableVaults }: Readonly<{ availableVaults: VaultPosition[] }>) {
+export default function AvailableVaults() {
   const { selectedAsset } = useAppContext();
 
   return (
@@ -13,10 +13,12 @@ export default function AvailableVaults({ availableVaults }: Readonly<{ availabl
       className={cn(
         'w-full h-full rounded-xl grid justify-between items-center',
         'gap-8 relative',
-        (selectedAsset?.highAPY1Vault && selectedAsset?.highAPY2Vault) 
-        || (selectedAsset?.highAPY1Vault && selectedAsset?.highTVLVault) 
-        || (selectedAsset?.highAPY1Vault && selectedAsset?.trustedCuratorVault)
-        || (selectedAsset?.highTVLVault && selectedAsset?.trustedCuratorVault) ? 'grid-cols-2' : 'grid-cols-1'
+        (selectedAsset?.highAPY1Vault && selectedAsset?.highAPY2Vault) ||
+          (selectedAsset?.highAPY1Vault && selectedAsset?.highTVLVault) ||
+          (selectedAsset?.highAPY1Vault && selectedAsset?.trustedCuratorVault) ||
+          (selectedAsset?.highTVLVault && selectedAsset?.trustedCuratorVault)
+          ? 'grid-cols-2'
+          : 'grid-cols-1'
       )}
     >
       {selectedAsset ? (
@@ -39,7 +41,6 @@ export default function AvailableVaults({ availableVaults }: Readonly<{ availabl
           <span className="absolute text-center text-[#355180] text-5xl px-32 leading-loose">
             Please Select at least one token to see positions
           </span>
-          {/* TODO: look for grid-cols-1 for logic */}
           {[0, 1, 2, 3].map((item) => (
             <VaultCard key={item} />
           ))}

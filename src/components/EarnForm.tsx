@@ -1,47 +1,58 @@
 'use client';
 
 import { useAppContext } from '@/contexts/AppContext';
+import { useToast } from '@/hooks/use-toast';
 import { useMorphoChainAgnosticBundlerV2 } from '@/hooks/useMorphoChainAgnosticBundlerV2';
+import { useWETH } from '@/hooks/useWETH';
 import { cn } from '@/lib/utils';
 import abi from '@/shared/abi/MorphoChainAgnosticBundlerV2.json';
 import { BundlerAction } from '@morpho-org/morpho-blue-bundlers/pkg';
-import { useState } from 'react';
-import { encodeFunctionData, parseEther } from 'viem';
+import { useEffect, useState } from 'react';
+import { encodeFunctionData, parseEther, parseUnits } from 'viem';
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
 export default function EarnForm() {
+  const { toast } = useToast();
   const { address, isConnected } = useAccount();
-  // TODO: how are we setting amount as bigint?
+  const WETH = useWETH();
   const [amount, setAmount] = useState('');
-  const { selectedVault } = useAppContext();
-  const { data: hash, error, sendTransactionAsync } = useSendTransaction();
+  const { selectedAsset, selectedVault } = useAppContext();
+  const finalAmount =
+    selectedAsset?.address === WETH ? parseEther(amount) : parseUnits(amount, selectedAsset?.decimals || 18);
+  const { data: hash, sendTransactionAsync } = useSendTransaction();
+  const { isSuccess } = useWaitForTransactionReceipt({ hash });
   const bundlerAddress = useMorphoChainAgnosticBundlerV2();
-  console.log('hash', hash);
-  console.log('error', error);
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: 'Transaction successful',
+        description: 'Transaction hash: ' + hash
+      });
+    }
+  }, [isSuccess, toast, hash]);
 
   const finalizeTransaction = async () => {
-    console.log('finalizeTransaction');
+    if (!selectedVault) {
+      return;
+    }
+
     const data = encodeFunctionData({
       abi,
       functionName: 'multicall',
       args: [
         [
-          BundlerAction.wrapNative(1000000n),
-          BundlerAction.erc20Transfer(
-            '0x4200000000000000000000000000000000000006',
-            '0x75336b7F786dF5647f6B20Dc36eAb9E27D704894',
-            1000000n
-          )
+          BundlerAction.wrapNative(finalAmount),
+          BundlerAction.erc4626Deposit(selectedVault.address, WETH, 1, address as string)
         ]
       ]
     });
-
     await sendTransactionAsync({
       to: bundlerAddress,
       data: data,
-      value: 1000000n
+      value: finalAmount
     });
   };
 
@@ -64,7 +75,7 @@ export default function EarnForm() {
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        <FinalizeTransaction disabled={false} finalizeTransaction={finalizeTransaction} />
+        <FinalizeTransaction disabled={!(amount !== '' && selectedVault)} finalizeTransaction={finalizeTransaction} />
       </div>
     </div>
   );
