@@ -1,6 +1,8 @@
+import { formatCurrencyCompact, formatDigitalCurrency } from '@/lib/utils';
 import type { Asset, VaultItem } from '@/types';
 import { Info } from 'lucide-react';
 import Image from 'next/image';
+import { formatUnits } from 'viem';
 import VaultCard from './VaultCard';
 
 export default function Vault({
@@ -42,7 +44,15 @@ export default function Vault({
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Total Supply</span>
-          <span>100,000</span>
+          <div className="flex items-center gap-1">
+            <span>
+              {formatDigitalCurrency(Number(formatUnits(BigInt(vault.state.totalAssets), asset.decimals)))}&nbsp;
+              {asset.symbol}
+            </span>
+            <span className="bg-[#363b3b] rounded-md text-xs p-1">
+              {formatCurrencyCompact(vault.state.totalAssetsUsd)}
+            </span>
+          </div>
         </div>
         <div className="flex justify-between items-center w-full">
           <span>Net APY</span>
@@ -52,8 +62,8 @@ export default function Vault({
           <span>{vault.curators.length > 1 ? 'Curators' : 'Curator'}</span>
           <div className="flex items-center gap-2">
             {vault.curators.map((curator) => (
-              <a className="flex items-center" key={curator.name} href={curator.link} target="_blank">
-                <Image src={curator.image} alt={curator.name} width={28} height={28} />
+              <a className="flex items-center" key={curator.name} href={curator.url} target="_blank">
+                <Image src={curator.image} alt={curator.name} width={28} height={28} className="mr-1" />
                 <span>{curator.name}</span>
               </a>
             ))}

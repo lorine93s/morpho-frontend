@@ -33,6 +33,6 @@ export interface VaultItem {
   curators: {
     name: string;
     image: string;
-    link: string;
+    url: string;
   }[];
 }

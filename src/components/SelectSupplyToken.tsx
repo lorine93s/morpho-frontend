@@ -112,6 +112,7 @@ export default function SelectSupplyToken() {
         }, [])
         .filter((asset: Asset) => asset.vaults.length > 0)
         .map((_asset: Asset) => {
+          // TODO: bug: select curator with highest TVL
           const trustedCurator = _asset.vaults.find((vault: VaultItem) =>
             vault.curators.find((curator) => curator.name === TRUSTED_CURATOR_NAME)
           );
