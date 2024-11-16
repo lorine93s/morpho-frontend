@@ -2,6 +2,7 @@
 
 import Header from '@/components/Header/Header';
 import { Toaster } from '@/components/ui/toaster';
+import AppProvider from '@/contexts/AppContext';
 import apolloClient from '@/lib/apollo-client';
 import { cn } from '@/lib/utils';
 import { ApolloProvider } from '@apollo/client';
@@ -35,9 +36,11 @@ export default function RootLayout({
           <QueryClientProvider client={queryClient}>
             <ApolloProvider client={apolloClient}>
               <RainbowKitProvider>
-                <Header />
-                <div className="container min-h-screen min-w-[100vw]">{children}</div>
-                <Toaster />
+                <AppProvider>
+                  <Header />
+                  <div className="container min-h-screen min-w-[100vw]">{children}</div>
+                  <Toaster />
+                </AppProvider>
               </RainbowKitProvider>
             </ApolloProvider>
           </QueryClientProvider>

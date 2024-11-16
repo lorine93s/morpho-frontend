@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
+  images: {
+    domains: ['cdn.morpho.org']
+  },
   /**
    * @see{https://github.com/WalletConnect/walletconnect-monorepo/issues/1908}
    */
