@@ -1,5 +1,6 @@
 'use client';
 
+import Footer from '@/components/Footer';
 import Header from '@/components/Header/Header';
 import { Toaster } from '@/components/ui/toaster';
 import AppProvider from '@/contexts/AppContext';
@@ -38,7 +39,8 @@ export default function RootLayout({
               <RainbowKitProvider>
                 <AppProvider>
                   <Header />
-                  <div className="container min-h-screen min-w-[100vw]">{children}</div>
+                  <div className="container min-h-[calc(100vh-220px)] min-w-[100vw]">{children}</div>
+                  <Footer />
                   <Toaster />
                 </AppProvider>
               </RainbowKitProvider>
