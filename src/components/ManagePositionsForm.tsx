@@ -4,44 +4,6 @@ import { cn } from '@/lib/utils';
 import { gql, useQuery } from '@apollo/client';
 import { useAccount } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
-import SelectSupplyToken from './SelectSupplyToken';
-
-const GET_POSITIONS = gql`
-query getUserPositions($address: String!) {
-  userByAddress(address: $address) {
-    vaultPositions {
-      id
-      shares
-      assets
-      assetsUsd
-      vault {
-        address
-        id
-        dailyApys {
-          apy
-          netApy
-        }
-        liquidity {
-          underlying
-          usd
-        }
-        metadata {
-          curators {
-            image
-            name
-            url
-            verified
-          }
-          description
-          forumLink
-          image
-        }
-        symbol
-      }
-    }
-  }
-}
-`;
 
 export default function ManagePositionsForm() {
   const { isConnected } = useAccount();
