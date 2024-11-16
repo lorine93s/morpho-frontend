@@ -1,9 +1,47 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { gql, useQuery } from '@apollo/client';
 import { useAccount } from 'wagmi';
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
+
+const GET_POSITIONS = gql`
+query getUserPositions($address: String!) {
+  userByAddress(address: $address) {
+    vaultPositions {
+      id
+      shares
+      assets
+      assetsUsd
+      vault {
+        address
+        id
+        dailyApys {
+          apy
+          netApy
+        }
+        liquidity {
+          underlying
+          usd
+        }
+        metadata {
+          curators {
+            image
+            name
+            url
+            verified
+          }
+          description
+          forumLink
+          image
+        }
+        symbol
+      }
+    }
+  }
+}
+`;
 
 export default function ManagePositionsForm() {
   const { isConnected } = useAccount();
@@ -20,11 +58,14 @@ export default function ManagePositionsForm() {
         {isConnected && (<></>
         )}
       </div>
+      <span className="absolute text-center text-[#355180] text-4xl px-24 pt-28">
+        Please select a position to see management options
+      </span>
       <div className="flex flex-col gap-4 justify-between items-center">
         <span className="text-[#919AAF] text-center">
           Morpho is the most efficient, secure, and flexible lending protocol on Ethereum.
         </span>
-        <FinalizeTransaction />
+        <FinalizeTransaction title={"Select a Position"} disabled={true}/>
       </div>
     </div>
   );
