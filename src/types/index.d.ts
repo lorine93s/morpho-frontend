@@ -5,6 +5,10 @@ export interface Asset {
   symbol: string;
   decimals: number;
   vaults: VaultItem[];
+  trustedCurator?: VaultItem;
+  highTVL?: VaultItem;
+  highAPY1?: VaultItem;
+  highAPY2?: VaultItem;
 }
 
 export interface VaultItem {

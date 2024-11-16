@@ -112,13 +112,27 @@ export default function SelectSupplyToken() {
         .filter((asset: Asset) => asset.vaults.length > 0)
         .map((_asset: Asset) => {
           const trustedCurator = _asset.vaults.find((vault: VaultItem) => vault.curator.name === TRUSTED_CURATOR_NAME);
-          console.log('trustedCurator', trustedCurator);
-          // const asset = _asset.vaults.sort(
-          //   (a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd
-          // );
 
-          // console.log('asset', asset);
-          return _asset;
+          const sortedByTVL = _asset.vaults
+            .filter((vault: VaultItem) => vault.curator.name !== TRUSTED_CURATOR_NAME)
+            .sort((a: VaultItem, b: VaultItem) => b.state.totalAssetsUsd - a.state.totalAssetsUsd);
+          const highTVL = sortedByTVL.shift();
+
+          const sortedByAPY = sortedByTVL
+            .filter((vault: VaultItem) => vault.curator.name !== TRUSTED_CURATOR_NAME)
+            .sort((a: VaultItem, b: VaultItem) => b.state.netApy - a.state.netApy);
+          const highAPY1 = sortedByAPY.shift();
+          const highAPY2 = sortedByAPY.shift();
+
+          const asset = {
+            ..._asset,
+            trustedCurator,
+            highTVL,
+            highAPY1,
+            highAPY2
+          };
+
+          return asset;
         });
 
       setAssets(groupedAssets);
