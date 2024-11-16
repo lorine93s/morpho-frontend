@@ -9,8 +9,8 @@ export default function HeaderLinks() {
   const pathname = usePathname();
 
   const links = [
+    { href: '/', label: 'Earn' },
     { href: '/positions', label: 'Your Positions' },
-    { href: '/', label: 'New Position' },
     { href: '/rewards', label: 'Your Rewards' }
   ];
 
