@@ -23,6 +23,13 @@ const config = getDefaultConfig({
   ssr: true
 });
 
+const config1 = getDefaultConfig({
+  appName: 'morpho-frontend',
+  projectId: '134f0e99f1b28f5fc5482a9ac6126a51',
+  chains: [mainnet, base],
+  ssr: true
+});
+
 const queryClient = new QueryClient();
 
 export default function RootLayout({
