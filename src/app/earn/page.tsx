@@ -12,6 +12,7 @@ export default function Page() {
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
           <AvailableVaults />
+          
         </div>
       </div>
     </div>
