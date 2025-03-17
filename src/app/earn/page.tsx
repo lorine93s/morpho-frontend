@@ -11,6 +11,7 @@ export default function Page() {
       <div className="col-span-2 flex justify-between">
         <Separator orientation="vertical" className="w-0.5" />
         <div className="w-full px-8">
+          
           <AvailableVaults />
           
         </div>
