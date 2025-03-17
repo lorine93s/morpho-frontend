@@ -13,6 +13,7 @@ import { useAccount, useSendTransaction, useWaitForTransactionReceipt } from 'wa
 import FinalizeTransaction from './FinalizeTransaction';
 import SelectSupplyToken from './SelectSupplyToken';
 
+
 export default function EarnForm() {
   const { toast } = useToast();
   const { address, isConnected } = useAccount();
