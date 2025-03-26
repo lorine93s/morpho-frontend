@@ -9,7 +9,8 @@ export default function Page() {
         <button
           className='mt-[2vh] text-xl w-full rounded-[16px] py-2 px-6 bg-[#456DB5]'
         >
-            Start Earning
+          
+          Start Earning
           </button>
       </Link>
     </div>
